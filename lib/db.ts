@@ -13,7 +13,9 @@ export type User = {
   login_count: number;
 };
 
-const dataDir = process.env.DATA_DIR ?? path.join(process.cwd(), "data");
+// On Vercel only /tmp is writable (and it is wiped on restart): use Postgres for real data there.
+const dataDir =
+  process.env.DATA_DIR ?? (process.env.VERCEL ? "/tmp/data" : path.join(process.cwd(), "data"));
 
 declare global {
   // eslint-disable-next-line no-var
