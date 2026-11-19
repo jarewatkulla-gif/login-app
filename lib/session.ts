@@ -1,17 +1,19 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { SESSION_COOKIE, SESSION_TTL_SECONDS, signSession, verifySession } from "./session-token";
+import { REMEMBER_TTL_SECONDS, SESSION_COOKIE, SHORT_TTL_SECONDS, signSession, verifySession } from "./session-token";
 import { findUserById } from "./db";
 
-export async function startSession(userId: number) {
-  const token = await signSession(userId);
+// remember = true: cookie survives closing the browser (30 days).
+// remember = false: cookie is dropped when the browser closes.
+export async function startSession(userId: number, remember: boolean) {
+  const token = await signSession(userId, remember ? REMEMBER_TTL_SECONDS : SHORT_TTL_SECONDS);
   const jar = await cookies();
   jar.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: SESSION_TTL_SECONDS,
+    ...(remember ? { maxAge: REMEMBER_TTL_SECONDS } : {}),
   });
 }
 
@@ -24,5 +26,12 @@ export async function currentUser() {
   if (!id) return null;
   const user = findUserById(id);
   if (!user) return null;
-  return { id: user.id, name: user.name, email: user.email, createdAt: user.created_at };
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    createdAt: user.created_at,
+    lastLoginAt: user.last_login_at,
+    loginCount: user.login_count,
+  };
 }

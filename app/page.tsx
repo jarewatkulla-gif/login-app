@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/session";
 
 export default async function Home() {
-  if (await currentUser()) redirect("/dashboard");
+  if (await currentUser()) redirect("/slideshow");
   return (
     <main className="page">
       <div className="card">

@@ -12,6 +12,10 @@ export default function LoginForm() {
       {state.error && <div className="alert alert-error" role="alert">{state.error}</div>}
       <Field name="email" label="อีเมล" type="email" autoComplete="email" defaultValue={state.values?.email} error={fe.email} />
       <Field name="password" label="รหัสผ่าน" type="password" autoComplete="current-password" error={fe.password} />
+      <label className="check">
+        <input type="checkbox" name="remember" defaultChecked />
+        <span>จดจำฉันไว้ (ไม่ต้อง login ใหม่ 30 วัน)</span>
+      </label>
       <button className="btn" type="submit" disabled={pending}>
         {pending ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
       </button>

@@ -2,7 +2,8 @@
 import { SignJWT, jwtVerify } from "jose";
 
 export const SESSION_COOKIE = "session";
-export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+export const REMEMBER_TTL_SECONDS = 60 * 60 * 24 * 30; // "จดจำฉันไว้": 30 days
+export const SHORT_TTL_SECONDS = 60 * 60 * 12; // otherwise: browser session, max 12 hours
 
 function key(): Uint8Array {
   const secret = process.env.SESSION_SECRET;
@@ -15,12 +16,12 @@ function key(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-export async function signSession(userId: number): Promise<string> {
+export async function signSession(userId: number, ttlSeconds: number): Promise<string> {
   return new SignJWT({})
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(String(userId))
     .setIssuedAt()
-    .setExpirationTime(`${SESSION_TTL_SECONDS}s`)
+    .setExpirationTime(`${ttlSeconds}s`)
     .sign(key());
 }
 

@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { z } from "zod";
-import { createUser, findUserByEmail } from "@/lib/db";
+import { createUser, findUserByEmail, recordLogin } from "@/lib/db";
 import { endSession, startSession } from "@/lib/session";
 import { resetAttempts, tooManyAttempts } from "@/lib/rate-limit";
 
@@ -71,8 +71,9 @@ export async function register(_prev: FormState, formData: FormData): Promise<Fo
     return { fieldErrors: { email: "อีเมลนี้ถูกใช้สมัครแล้ว" }, values };
   }
 
-  await startSession(id);
-  redirect("/dashboard?welcome=1");
+  recordLogin(id);
+  await startSession(id, true);
+  redirect("/slideshow");
 }
 
 const loginSchema = z.object({
@@ -107,8 +108,9 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
   }
 
   resetAttempts(limitKey);
-  await startSession(user.id);
-  redirect("/dashboard");
+  recordLogin(user.id);
+  await startSession(user.id, formData.get("remember") === "on");
+  redirect("/slideshow");
 }
 
 export async function logout() {

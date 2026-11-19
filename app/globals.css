@@ -78,6 +78,8 @@ input {
 }
 input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent); }
 input[aria-invalid="true"] { border-color: var(--danger); }
+.check { display: flex; gap: 10px; align-items: center; font-size: 15px; cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--primary); margin: 0; }
 .hint { color: var(--muted); font-size: 13px; }
 .err { color: var(--danger); font-size: 13px; }
 
